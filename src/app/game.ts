@@ -22,6 +22,8 @@ import FRAG from "./game.frag"
 
 interface PassUniforms {
     uniTime: ThreeIUniform<number>
+    uniX: ThreeIUniform<number>
+    uniY: ThreeIUniform<number>
 }
 
 export default class Game {
@@ -54,6 +56,8 @@ export default class Game {
         this.shaderPass = new ThreeShaderPass({
             uniforms: {
                 uniTime: { value: 1.0 },
+                uniX: { value: 0.0 },
+                uniY: { value: 0.0 },
                 tDiffuse: null,
             },
             vertexShader: VERT,
@@ -61,7 +65,9 @@ export default class Game {
         })
         this.uniforms = this.shaderPass.material
             .uniforms as unknown as PassUniforms
-        this.composer.addPass(this.shaderPass)
+        for (let loop = 0; loop < 2; loop++) {
+            this.composer.addPass(this.shaderPass)
+        }
     }
 
     async load(): Promise<void> {
@@ -87,8 +93,10 @@ export default class Game {
         window.requestAnimationFrame(this.paint)
 
         this.checkSize()
-        const { composer, uniforms } = this
+        const { composer, uniforms, scene } = this
         uniforms.uniTime.value = time
+        uniforms.uniX.value = 1.0 / window.screen.availWidth
+        uniforms.uniY.value = 1.0 / window.screen.availHeight
         composer.render()
     }
 
