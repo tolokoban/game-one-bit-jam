@@ -2,9 +2,12 @@ import { Mesh as ThreeMesh, BufferGeometry as ThreeBufferGeometry } from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
 
-export async function loadGLB(path: string): Promise<ThreeMesh[]> {
+export async function loadGLB(
+    path: string,
+    computeNormals = false
+): Promise<ThreeMesh[]> {
     const draco = new DRACOLoader()
-    draco.setDecoderPath("/draco/")
+    draco.setDecoderPath("./draco/")
     const loader = new GLTFLoader()
     loader.setDRACOLoader(draco)
     const obj = await loader.loadAsync(path)
@@ -13,9 +16,8 @@ export async function loadGLB(path: string): Promise<ThreeMesh[]> {
         if (obj instanceof ThreeMesh) {
             if (obj.isMesh) {
                 const geometry = obj.geometry as ThreeBufferGeometry
-                geometry.computeVertexNormals()
+                if (computeNormals) geometry.computeVertexNormals()
                 meshes.push(obj as ThreeMesh)
-                console.log("🚀 [glb] obj.geometry = ", obj.geometry) // @FIXME: Remove this line written on 2023-08-15 at 11:48
             }
         }
     })

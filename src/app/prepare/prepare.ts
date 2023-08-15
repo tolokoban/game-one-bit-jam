@@ -2,7 +2,6 @@ import {
     WebGLRenderer as ThreeWebGLRenderer,
     OrthographicCamera as ThreeOrthographicCamera,
     Scene as ThreeScene,
-    Mesh as ThreeMesh,
     Vector3 as ThreeVector3,
     ShaderMaterial as ThreeShaderMaterial,
 } from "three"
@@ -14,7 +13,16 @@ import { loadGLB } from "@/loader/glb"
 export async function createParticlesData(
     url: string,
     width: number,
-    height: number
+    height: number,
+    {
+        distance = 15,
+        x = 0,
+        y = 0,
+    }: Partial<{
+        distance: number
+        x: number
+        y: number
+    }>
 ): Promise<Float32Array> {
     const canvas = document.createElement("canvas")
     canvas.width = width
@@ -23,10 +31,16 @@ export async function createParticlesData(
     if (!context) throw Error("Unable to get WebGL2 context!")
 
     const renderer = new ThreeWebGLRenderer({ canvas, context })
-    const d = 2.5
-    const camera = new ThreeOrthographicCamera(-d, +d, +d, -d)
+    const camera = new ThreeOrthographicCamera(
+        -distance,
+        +distance,
+        +distance,
+        -distance
+    )
     camera.position.set(100, 100, 100)
     camera.lookAt(new ThreeVector3(0, 0, 0))
+    camera.position.x += x
+    camera.position.z += -y
     const scene = new ThreeScene()
     const material = makeMaterial()
     for (const mesh of await loadGLB(url)) {
@@ -53,13 +67,17 @@ export async function createParticlesData(
             if (r < 1) continue
 
             particles.push(
-                x * scaleX - 1,
-                1 - y * scaleY,
+                x * scaleX - 1 + Math.random() * scaleX,
+                1 - y * scaleY + Math.random() * scaleY,
                 (1.0 * r) / 255, // Light
                 1 / (500 + Math.random() * 1500)
             )
         }
     }
+    // document.body.appendChild(canvas)
+    // canvas.style.position = "absolute"
+    // canvas.style.width = "512px"
+    // canvas.style.height = "512px"
     return new Float32Array(particles)
 }
 
