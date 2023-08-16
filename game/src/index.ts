@@ -39,7 +39,7 @@ async function start() {
         if (key === "0") {
             if (logic.x === 0) {
                 logic.x = 16
-                logic.y = 15
+                logic.y = 16
             } else {
                 logic.x = 0
                 logic.y = 0
