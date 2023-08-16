@@ -1,4 +1,6 @@
-import { LEVEL1, logLevel } from "../levels/level"
+import { DirectionalLight } from "three"
+import Level from "../levels/level"
+import DebugMove from "./debug-move"
 
 export enum Direction {
     Up = 0,
@@ -14,27 +16,30 @@ const DIRECTIONS_Y = [-1, 1, 0, 0, 0]
 export default class MoveLogic {
     private currentDir: Direction
     private nextDir: Direction
-    private readonly levelCols: number
-    private readonly levelRows: number
+    private readonly debugger: DebugMove
 
     public x = 0
     public y = 0
     public speed = 1e-3
 
-    constructor(private readonly level: number[][], x: number, y: number) {
+    constructor(private readonly level: Level, x: number, y: number) {
+        this.debugger = new DebugMove(level)
         this.x = x
         this.y = y
-        this.levelCols = level[0].length
-        this.levelRows = level.length
         this.currentDir = Direction.Stop
         this.nextDir = Direction.Stop
     }
 
     setDirection(nextDirection: Direction) {
         this.nextDir = nextDirection
-        if (this.currentDir === Direction.Stop) {
-            this.currentDir = this.nextDir
-            console.log(this.nextDir.toString())
+        if (
+            this.currentDir === Direction.Stop &&
+            nextDirection !== Direction.Stop
+        ) {
+            console.log("Start moving?", this.x, this.y)
+            if (this.canWalkOn(this.x, this.y, nextDirection)) {
+                this.currentDir = this.nextDir
+            }
         }
     }
 
@@ -43,6 +48,7 @@ export default class MoveLogic {
      */
     update(delay: number) {
         const { x, y, speed, currentDir, nextDir } = this
+        this.debugger.update(x, y)
         const nextX = x + DIRECTIONS_X[currentDir] * speed * delay
         const nextY = y + DIRECTIONS_Y[currentDir] * speed * delay
         const pivotX = Math.floor(0.5 + (x + nextX) / 2)
@@ -53,13 +59,14 @@ export default class MoveLogic {
         const y2 = nextY - pivotY
         const proj = x1 * x2 + y1 * y2
         if (proj < 0) {
+            console.log("Pivot:", pivotX, pivotY)
             if (nextDir !== currentDir) {
                 // We just passed the center of a cell.
                 // We try to change direction if no wall interfers.
                 const targetCol = pivotX + DIRECTIONS_X[nextDir]
                 const targetRow = pivotY + DIRECTIONS_Y[nextDir]
                 console.log("Trying to go there:", targetCol, targetRow)
-                if (this.isRoad(targetCol, targetRow)) {
+                if (this.canWalkOn(targetCol, targetRow)) {
                     this.currentDir = nextDir
                     const len = Math.max(Math.abs(x2), Math.abs(y2))
                     this.x = pivotX + len * DIRECTIONS_X[nextDir]
@@ -70,12 +77,11 @@ export default class MoveLogic {
             // Check if there is a road ahead.
             const nextCol = pivotX + DIRECTIONS_X[currentDir]
             const nextRow = pivotY + DIRECTIONS_Y[currentDir]
-            if (!this.isRoad(nextCol, nextRow)) {
+            if (!this.canWalkOn(nextCol, nextRow)) {
                 this.currentDir = Direction.Stop
                 this.x = pivotX
                 this.y = pivotY
                 console.log("Hit a wall!", pivotX, pivotY)
-                logLevel(LEVEL1, pivotX, pivotY)
             }
         }
         // Keep moving.
@@ -83,14 +89,9 @@ export default class MoveLogic {
         this.y = nextY
     }
 
-    isRoad(x: number, y: number) {
-        const col = Math.floor(x)
-        if (col < 0 || col >= this.levelCols) return false
-
-        const row = Math.floor(y)
-        if (row < 0 || row >= this.levelRows) return false
-
-        const cell = this.level[row][col]
-        return cell === 1
+    canWalkOn(x: number, y: number, direction: Direction = Direction.Stop) {
+        const dx = DIRECTIONS_X[direction]
+        const dy = DIRECTIONS_Y[direction]
+        return this.level.isRoad(x + dx, y + dy)
     }
 }

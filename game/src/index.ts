@@ -7,7 +7,7 @@ import MoveLogic, { Direction } from "./logic/move"
 import "./index.css"
 import Input from "./input"
 
-let ZOOM = 0.589
+let ZOOM = 0.579
 let A = 0.236
 let B = A * ZOOM
 
@@ -34,7 +34,7 @@ async function start() {
 
     window.addEventListener("keydown", (evt: KeyboardEvent) => {
         const { key } = evt
-        evt.preventDefault()
+        if ("0+-*/".includes(key)) evt.preventDefault()
 
         if (key === "0") {
             if (logic.x === 0) {
