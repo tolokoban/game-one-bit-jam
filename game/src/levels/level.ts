@@ -18,7 +18,8 @@ export default class Level {
                 items
                     .map((value, col) => {
                         if (col === Math.floor(x) && row === Math.floor(y)) {
-                            color = value === 1 ? "#0f0" : "#f00"
+                            if (value === 1) color = "#0f0"
+                            else color = "#f00"
                             return "%c▉%c"
                         }
                         return value === 1 ? "▉" : " "

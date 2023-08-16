@@ -7,7 +7,7 @@
             name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        <meta name="theme-color" content="#2ca600" />
+        <meta name="theme-color" content="#ccb27f" />
         <link rel="manifest" href="manifest.json" />
         <title>ToloGameDev</title>
     </head>
@@ -15,6 +15,37 @@
     <body class="">
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <canvas id="canvas"></canvas>
+        <svg
+            id="controls"
+            xmlns="http://www.w3.org/2000/svg"
+            height="100%"
+            width="100%"
+            version="1.1"
+            viewBox="-60 -36 120 72"
+            preserveAspectRatio="xMidYMid"
+        >
+            <defs>
+                <path id="triangle" d="M0,45l12,-25h-24z" />
+            </defs>
+            <g transform="scale(1, 0.6) rotate(45)">
+                <circle cx="0" cy="0" r="50" fill="#000d" stroke="none" />
+                <g
+                    fill="#ccb27f"
+                    stroke="#ccb27f"
+                    stroke-width="5"
+                    stroke-linejoin="round"
+                >
+                    <use class="down" href="#triangle" />
+                    <use class="left" href="#triangle" transform="rotate(90)" />
+                    <use class="up" href="#triangle" transform="rotate(180)" />
+                    <use
+                        class="right"
+                        href="#triangle"
+                        transform="rotate(-90)"
+                    />
+                </g>
+            </g>
+        </svg>
         <div
             style="
                 position: fixed;

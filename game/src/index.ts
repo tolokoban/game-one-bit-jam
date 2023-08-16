@@ -44,6 +44,7 @@ async function start() {
                 logic.x = 0
                 logic.y = 0
             }
+            logic.setDirection(Direction.Stop)
         }
         if (key === "+") ZOOM += 1e-3
         if (key === "-") ZOOM -= 1e-3

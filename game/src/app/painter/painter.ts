@@ -10,6 +10,7 @@ export default class Game {
     private readonly uniTime: WebGLUniformLocation
     private readonly uniSize: WebGLUniformLocation
     private readonly uniAlpha: WebGLUniformLocation
+    private readonly uniDensity: WebGLUniformLocation
     private readonly uniColor: WebGLUniformLocation
     private readonly uniMatrix: WebGLUniformLocation
     private lastWidth = 0
@@ -42,6 +43,7 @@ export default class Game {
         this.uniTime = getUniformLocation(gl, this.prg, "uniTime")
         this.uniSize = getUniformLocation(gl, this.prg, "uniSize")
         this.uniAlpha = getUniformLocation(gl, this.prg, "uniAlpha")
+        this.uniDensity = getUniformLocation(gl, this.prg, "uniDensity")
         this.uniColor = getUniformLocation(gl, this.prg, "uniColor")
         this.uniMatrix = getUniformLocation(gl, this.prg, "uniMatrix")
         const buffer = gl.createBuffer()
@@ -78,8 +80,10 @@ export default class Game {
             uniTime,
             uniSize,
             uniAlpha,
+            uniDensity,
             uniColor,
             uniMatrix,
+            density,
             red,
             green,
             blue,
@@ -100,6 +104,7 @@ export default class Game {
         gl.uniform1f(uniTime, (time + TIME0) * 0.2)
         gl.uniform1f(uniSize, size)
         gl.uniform1f(uniAlpha, alpha)
+        gl.uniform1f(uniDensity, density)
         gl.uniform3f(uniColor, red, green, blue)
         gl.uniformMatrix4fv(uniMatrix, true, this.matrix)
         gl.bindVertexArray(vao)
@@ -111,8 +116,8 @@ export default class Game {
         if (!projection.update()) return false
 
         this.updateMatrix()
-        const referenceSurface = 3686400
-        const surface = projection.width * projection.height
+        const referenceSurface = 1080 // 3686400
+        const surface = Math.min(projection.width, projection.height)
         const density = Math.min(1, surface / referenceSurface)
         this.count = Math.floor((this.data.length >> 2) * Math.min(1, density))
         return true

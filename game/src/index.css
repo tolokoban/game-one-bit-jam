@@ -11,3 +11,30 @@ canvas#canvas {
     background: #000;
     color: #fff;
 }
+
+#controls {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 50vmin;
+    height: 50vmin;
+    margin: 0 -25vmin;
+}
+
+#controls .left,
+#controls .right,
+#controls .up,
+#controls .down {
+    opacity: 0.4;
+    transition: 0.2s opacity;
+}
+
+@media (orientation: landscape) {
+    #controls {
+        bottom: 0;
+        left: 0;
+        width: 50vmin;
+        height: 50vmin;
+        margin: 0;
+    }
+}
