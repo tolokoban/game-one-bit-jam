@@ -5,8 +5,10 @@ precision mediump float ;
 uniform float uniSize;
 uniform mat4 uniMatrix;
 
+// Vertex
 in vec2 attCorner;
 in vec2 attUV;
+// Instance
 in vec2 attCenter;
 in vec2 attAtlas;
 
@@ -16,13 +18,13 @@ const float ZOOM = 0.579;
 const float A = 0.236;
 const float B = A * ZOOM;
 const mat2 ISO = mat2(
-    A, -A,
-    -B, -B
+    A, -B,
+    -A, -B
 );
 
 void main() {
-    varUV = attUV * vec2(0.25, 0.5) - attAtlas;
-    vec2 xy = attCorner * uniSize + ISO * attCenter * 0.000000000000001;
-    float z = max(attCenter.x, attCenter.y) / 32.0;
+    varUV = attUV * vec2(0.25, 0.5) + attAtlas;
+    vec2 xy = attCorner * uniSize + ISO * attCenter;
+    float z = 1.0 - max(attCenter.x, attCenter.y) / 32.0;
     gl_Position = uniMatrix * vec4(xy, z, 1.0);
 }

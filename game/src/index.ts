@@ -107,7 +107,6 @@ async function start() {
         previousTime = time
         window.requestAnimationFrame(paint)
     }
-    window.requestAnimationFrame(paint)
 
     const startButton = getById("start-button")
     startButton.addEventListener("click", () => {
@@ -115,13 +114,12 @@ async function start() {
         const music = getById("music") as HTMLAudioElement
         music.volume = 0.5
         const gameScreen = getById("game-screen") as HTMLDivElement
-        gameScreen
-            .requestFullscreen()
-            .then(() => {
-                music.play()
-                music.playbackRate = -1
-            })
-            .catch(() => music.play())
+        const go = () => {
+            music.play()
+            music.playbackRate = 0.8
+            window.requestAnimationFrame(paint)
+        }
+        gameScreen.requestFullscreen().then(go).catch(go)
     })
     const splash = getById("splash-screen")
     splash.classList.add("vanish")

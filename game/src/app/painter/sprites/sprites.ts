@@ -1,3 +1,4 @@
+import { Theme } from "@/utils/theme"
 import {
     TgdAttributes,
     createBuffer,
@@ -23,7 +24,6 @@ export default class Sprites {
         attCenter: number
         attAtlas: number
     }>
-    private count = 0
     // prettier-ignore
     private readonly matrix = new Float32Array([
         1, 0, 0, 0,
@@ -35,7 +35,7 @@ export default class Sprites {
     public x = 0
     public y = 0
     public zoom = 1
-    public size = 0.1
+    public size = 0.14
     public red0 = 0
     public green0 = 0
     public blue0 = 0
@@ -62,7 +62,7 @@ export default class Sprites {
         })
         attribsVert.set(
             "attCorner",
-            new Float32Array([-1, -1, +1, -1, -1, +1, +1, +1])
+            new Float32Array([-1, 0, +1, 0, -1, +2, +1, +2])
         )
         attribsVert.set("attUV", new Float32Array([0, 1, 1, 1, 0, 0, 1, 0]))
         attribsVert.update(gl, bufferVert, 4, false)
@@ -76,16 +76,13 @@ export default class Sprites {
         )
         attribsInst.set(
             "attCenter",
-            new Float32Array([0, 0, 3, 0, 6, 0, 0, 2, 3, 2, 0, 4])
+            new Float32Array([0, 0, 3, 0, 3, 2, 0, 2, 0, 4, 3, 4])
         )
-        attribsInst.set(
-            "attAtlas",
-            new Float32Array(
-                [0, 0, 0, 1, 1, 1, 2, 1, 3, 1, 0, 2].map(value =>
-                    (value & 1) === 0 ? value * 0.25 : value * 0.5
-                )
-            )
+        const grid = [0, 0, 1, 0, 2, 0, 3, 0, 2, 0, 0, 2].map((value, index) =>
+            (index & 1) === 0 ? value * 0.25 : value * 0.5
         )
+        console.log("🚀 [sprites] grid = ", grid) // @FIXME: Remove this line written on 2023-08-17 at 23:28
+        attribsInst.set("attAtlas", new Float32Array(grid))
         attribsInst.update(gl, bufferInst, 6, true)
         const vao = createVertexArray(gl)
         gl.bindVertexArray(vao)
@@ -96,7 +93,6 @@ export default class Sprites {
         this.prg = prg
         this.vao = vao
         this.attribsInst = attribsInst
-        this.count = 6
     }
 
     readonly paint = (time: number) => {
@@ -104,7 +100,6 @@ export default class Sprites {
             gl,
             prg,
             vao,
-            count,
             uniAtlas,
             uniSize,
             uniColor0,
@@ -120,6 +115,7 @@ export default class Sprites {
         } = this
         this.checkSize()
         this.updateMatrix()
+        this.updateColors()
         gl.enable(gl.BLEND)
         gl.blendEquation(gl.FUNC_ADD)
         gl.blendFuncSeparate(
@@ -135,7 +131,22 @@ export default class Sprites {
         gl.uniformMatrix4fv(uniMatrix, true, this.matrix)
         gl.uniform1i(uniAtlas, 0)
         gl.bindVertexArray(vao)
-        gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count)
+        gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, 6) // 6)
+    }
+
+    private updateColors() {
+        this.red0 = Theme.backR
+        this.green0 = Theme.backG
+        this.blue0 = Theme.backB
+        this.red1 = Theme.frontR
+        this.green1 = Theme.frontG
+        this.blue1 = Theme.frontB
+        // console.log(
+        //     "🚀 [sprites] Theme.frontR, Theme.frontG, Theme.frontB = ",
+        //     Theme.frontR,
+        //     Theme.frontG,
+        //     Theme.frontB
+        // ) // @FIXME: Remove this line written on 2023-08-17 at 23:09
     }
 
     private checkSize(): boolean {
