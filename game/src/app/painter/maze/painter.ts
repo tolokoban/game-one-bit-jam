@@ -1,7 +1,7 @@
 import { createProgram, getUniformLocation } from "@/webgl2"
 import VERT from "./painter.vert"
 import FRAG from "./painter.frag"
-import Projection from "../projection"
+import Projection from "../../projection"
 
 export default class Game {
     private readonly projection: Projection

@@ -1,6 +1,7 @@
 body,
 html,
-canvas#canvas {
+canvas#canvas,
+#game-screen {
     position: absolute;
     left: 0;
     top: 0;
@@ -8,33 +9,76 @@ canvas#canvas {
     padding: 0;
     width: 100%;
     height: 100%;
-    background: #000;
-    color: #fff;
 }
 
 #controls {
     position: absolute;
-    left: 50%;
+    left: 0;
     bottom: 0;
     width: 50vmin;
-    height: 50vmin;
-    margin: 0 -25vmin;
+    height: 30vmin;
+    margin: 0;
+}
+
+@media (hover: hover) {
+    #controls {
+        display: none;
+    }
+}
+
+#controls circle {
+    fill: var(--theme-color-front-50);
+    transition: 0.2s all;
 }
 
 #controls .left,
 #controls .right,
 #controls .up,
 #controls .down {
+    fill: var(--theme-color-back);
+    stroke: var(--theme-color-back);
     opacity: 0.4;
-    transition: 0.2s opacity;
+    transition: 0.2s all;
 }
 
-@media (orientation: landscape) {
-    #controls {
-        bottom: 0;
-        left: 0;
-        width: 50vmin;
-        height: 50vmin;
-        margin: 0;
-    }
+#controls.left .left,
+#controls.right .right,
+#controls.up .up,
+#controls.down .down {
+    opacity: 1;
+}
+
+#hall-of-fame {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    background: var(--theme-color-back);
+    color: var(--theme-color-front);
+    pointer-events: all;
+}
+
+body.play #hall-of-fame {
+    pointer-events: none;
+    display: none;
+}
+
+button {
+    color: var(--theme-color-front);
+    font: inherit;
+    font-variant: small-caps;
+    font-weight: bolder;
+    padding: 1em;
+    border-radius: 1em;
+    border: 0.25em solid var(--theme-color-front-50);
+    background: none;
+    transition: 0.2s all;
+    cursor: pointer;
+}
+
+button:hover,
+button:active {
+    border: 0.25em solid var(--theme-color-front-90);
+    background: var(--theme-color-front-10);
 }

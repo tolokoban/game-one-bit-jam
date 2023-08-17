@@ -1,2 +1,5 @@
+export * from "./attributes"
+export * from "./buffer"
 export * from "./uniform"
 export * from "./program"
+export * from "./vertex-array"
