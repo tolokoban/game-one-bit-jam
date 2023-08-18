@@ -13,6 +13,7 @@ import { getElement } from "@/utils/dom"
 import { saveScore } from "@/utils/scores"
 
 const POINTS = getElement("#points")
+const SOUND = getElement("#sound") as HTMLAudioElement
 
 export default class Game {
     private readonly level = LEVEL1
@@ -88,7 +89,7 @@ export default class Game {
                     this.stop()
                     showPage("game-over")
                     saveScore(this.points)
-                    ;(getElement("sound") as HTMLAudioElement).play()
+                    SOUND.play()
                 }
             }
             if (collide(pacman, diamond)) {

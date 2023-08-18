@@ -98,7 +98,10 @@ export default class Sprites {
         this.vao = vao
         this.buffer = bufferInst
         this.attribsInst = attribsInst
-        onKey("Enter", () => attribsInst.debug())
+        onKey("Enter", () => {
+            attribsInst.debug()
+            console.log("🚀 [sprites] this = ", this) // @FIXME: Remove this line written on 2023-08-18 at 19:30
+        })
     }
 
     readonly paint = (time: number) => {

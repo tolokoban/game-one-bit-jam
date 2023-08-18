@@ -16,7 +16,10 @@ async function start() {
     if (!atlas) throw Error('Unable to load image "./atlas.png"!')
 
     const canvas = getElement("#canvas") as HTMLCanvasElement
-    const gl = canvas.getContext("webgl2")
+    const gl = canvas.getContext("webgl2", {
+        alpha: false,
+        premultipliedAlpha: false,
+    })
     if (!gl) throw Error("Unable to get WebGL2 context!")
 
     const dataMaze = await loadAttributes("level1")

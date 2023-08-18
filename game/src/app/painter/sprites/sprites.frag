@@ -15,7 +15,7 @@ void main() {
     if (texel.a < 1.0 / 255.0) discard;
 
     FragColor = vec4(
-        mix(uniColor1, uniColor0, texel.r),
+        mix(uniColor1, uniColor0, texel.g),
         texel.a
     );
 }
