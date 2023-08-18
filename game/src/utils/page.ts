@@ -15,9 +15,9 @@ export function showPage(pageId: "hall-of-fame" | "game-over" | "game-screen") {
         musicStart()
         return
     } else {
+        musicStop()
         if (document.fullscreenElement) {
             document.exitFullscreen()
-            musicStop()
         }
     }
     getElement(`#${pageId}`).classList.add("show")

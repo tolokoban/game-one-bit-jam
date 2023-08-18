@@ -88,6 +88,7 @@ export default class Game {
                     this.stop()
                     showPage("game-over")
                     saveScore(this.points)
+                    ;(getElement("sound") as HTMLAudioElement).play()
                 }
             }
             if (collide(pacman, diamond)) {

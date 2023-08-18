@@ -26,7 +26,7 @@ export function displayScores() {
 }
 
 export function saveScore(points: number) {
-    const items = [...loadScores(), ["(You)", `${points}`]]
+    const items = [...loadScores(), ["> (You)", `${points}`]]
         .sort(sortItems)
         .slice(0, DEFAULT.length)
     window.localStorage.setItem(
@@ -51,5 +51,5 @@ function sortItems(
     [_nameA, scoreA]: string[],
     [_nameB, scoreB]: string[]
 ): number {
-    return parseInt(scoreA, 10) - parseInt(scoreB, 10)
+    return parseInt(scoreB, 10) - parseInt(scoreA, 10)
 }
