@@ -1,6 +1,5 @@
 import { Theme } from "./utils/theme"
 import Painter from "./app/painter/maze"
-import Circle from "./app/circle"
 import { loadAttributes } from "./loader"
 import { LEVEL1 } from "./levels/level"
 import MoveLogic, { Direction, PivotHandler } from "./logic/move"
@@ -12,13 +11,15 @@ import { TgdLoadImage } from "./utils/load"
 import Sprites from "./app/painter/sprites/sprites"
 import Hunt from "./logic/hunt/hunt"
 import { onKey } from "./utils/events"
+import MonsterMoveLogic from "./logic/monster"
+import PacManMoveLogic from "./logic/pacman"
 
 /**
  * These Magic Numbers have been set manually by eye control.
  */
 let ZOOM = 0.579
-let A = 0.236
-let B = A * ZOOM
+let PROJ_A = 0.236
+let PROJ_B = PROJ_A * ZOOM
 
 async function start() {
     const atlas = await TgdLoadImage.loadInCanvas("./atlas.png")
@@ -30,62 +31,36 @@ async function start() {
     const gl = canvas.getContext("webgl2")
     if (!gl) throw Error("Unable to get WebGL2 context!")
 
-    const hunt = new Hunt(LEVEL1)
-    const movePacMan = new MoveLogic(LEVEL1, 3, 2)
-    const pivotHandler = (col: number, row: number) => {
-        return hunt.getDirection(col, row, movePacMan.x, movePacMan.y)
-    }
+    const movePacMan = new PacManMoveLogic(LEVEL1, 3, 2)
+    // const hunt = new Hunt(LEVEL1)
+    // const pivotHandler = (col: number, row: number) => {
+    //     return hunt.getDirection(col, row, movePacMan.x, movePacMan.y)
+    // }
     const moveMonsters: MoveLogic[] = [
-        makeMonsterLogic(LEVEL1.cols - 1, 0, pivotHandler, 1),
-        makeMonsterLogic(0, LEVEL1.rows - 1, pivotHandler, 1.25),
-        makeMonsterLogic(LEVEL1.cols - 1, LEVEL1.rows - 1, pivotHandler, 2),
+        new MonsterMoveLogic(LEVEL1, 0, 0, movePacMan, 0.5),
+        // new MonsterMoveLogic(LEVEL1, LEVEL1.cols - 1, 0, movePacMan, 1),
+        // new MonsterMoveLogic(LEVEL1, 0, LEVEL1.rows - 1, movePacMan, 1.25),
+        // new MonsterMoveLogic(
+        //     LEVEL1,
+        //     LEVEL1.cols - 1,
+        //     LEVEL1.rows - 1,
+        //     movePacMan,
+        //     2
+        // ),
     ]
     const painterSprites = new Sprites(gl, atlas, movePacMan, moveMonsters)
     const dataMaze = await loadAttributes("level1")
     const painterMaze = new Painter(gl, dataMaze)
-    painterMaze.alpha = 0.5
+    painterMaze.alpha = 0.95
     painterMaze.size = 0.05
     painterMaze.zoom = 5
     let previousTime = 0
 
-    onKey(" ", () => Theme.toggle())
-    window.addEventListener("keydown", (evt: KeyboardEvent) => {
-        const { key } = evt
-        if ("0+-*/".includes(key)) evt.preventDefault()
-
-        if (key === "0") {
-            if (movePacMan.x === 0) {
-                movePacMan.x = 16
-                movePacMan.y = 16
-            } else {
-                movePacMan.x = 0
-                movePacMan.y = 0
-            }
-            movePacMan.setDirection(Direction.Stop)
-        }
-        if (key === "+") ZOOM += 1e-3
-        if (key === "-") ZOOM -= 1e-3
-        if (key === "*") A += 1e-3
-        if (key === "/") A -= 1e-3
-
-        B = A * ZOOM
-        console.log("🚀 [index] ZOOM, A = ", ZOOM, A) // @FIXME: Remove this line written on 2023-08-16 at 15:35
+    onKey(" ", () => {
+        console.log(moveMonsters)
+        Theme.toggle()
     })
 
-    new Input({
-        onLeft() {
-            movePacMan.setDirection(Direction.Left)
-        },
-        onRight() {
-            movePacMan.setDirection(Direction.Right)
-        },
-        onDown() {
-            movePacMan.setDirection(Direction.Down)
-        },
-        onUp() {
-            movePacMan.setDirection(Direction.Up)
-        },
-    })
     const paint = (time: number) => {
         gl.clearColor(Theme.backR, Theme.backG, Theme.backB, 1)
         gl.clear(gl.COLOR_BUFFER_BIT)
@@ -109,8 +84,8 @@ async function start() {
             }
             const x = movePacMan.x
             const y = movePacMan.y
-            painterMaze.x = A * x - A * y
-            painterMaze.y = -B * x - B * y
+            painterMaze.x = PROJ_A * x - PROJ_A * y
+            painterMaze.y = -PROJ_B * x - PROJ_B * y
         }
         previousTime = time
         window.requestAnimationFrame(paint)
@@ -132,17 +107,6 @@ async function start() {
     const splash = getById("splash-screen")
     splash.classList.add("vanish")
     window.setTimeout(() => splash.parentNode?.removeChild(splash), 1000)
-}
-
-function makeMonsterLogic(
-    x: number,
-    y: number,
-    pivotHandler: PivotHandler,
-    speed: number
-): MoveLogic {
-    const move = new MoveLogic(LEVEL1, x, y, pivotHandler)
-    move.speed = speed * 1e-3
-    return move
 }
 
 start()

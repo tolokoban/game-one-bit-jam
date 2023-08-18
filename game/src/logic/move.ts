@@ -18,7 +18,7 @@ export type PivotHandler = (x: number, y: number) => Direction
 const DIRECTIONS_X = [0, 0, -1, 1, 0]
 const DIRECTIONS_Y = [-1, 1, 0, 0, 0]
 
-export default class MoveLogic {
+export default abstract class MoveLogic {
     private currentDir: Direction
     private nextDir: Direction
     private readonly debugger: DebugMove
