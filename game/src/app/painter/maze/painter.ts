@@ -14,8 +14,6 @@ export default class Game {
     private readonly uniDensity: WebGLUniformLocation
     private readonly uniColor: WebGLUniformLocation
     private readonly uniMatrix: WebGLUniformLocation
-    private lastWidth = 0
-    private lastHeight = 0
     private count = 0
     // prettier-ignore
     private readonly matrix = new Float32Array([
@@ -27,11 +25,11 @@ export default class Game {
 
     public x = 0
     public y = 0
-    public alpha = 0.5
-    public zoom = 1
-    public size = 0.05
-    public red = 0 // 1
-    public green = 0 // 0.8
+    private alpha = 0.95
+    private zoom = 5
+    private size = 0.05
+    public red = 0
+    public green = 0
     public blue = 0
     public density = 1
 

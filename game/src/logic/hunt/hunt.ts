@@ -31,7 +31,7 @@ export default class Hunt {
             Math.round(toX),
             Math.round(toY)
         )
-        return this.map.get(key) ?? Direction.Stop
+        return this.map.get(key) ?? Direction.Continue
     }
 }
 

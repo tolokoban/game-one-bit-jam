@@ -1,4 +1,4 @@
-import { getById } from "./dom"
+import { getElement } from "./dom"
 
 const DIRECTIONS: Array<"left" | "right" | "up" | "down"> = [
     "left",
@@ -19,7 +19,7 @@ export default class Input {
         }
     ) {
         window.addEventListener("keydown", this.handlKeyDown)
-        this.controls = getById("controls")
+        this.controls = getElement("#controls")
         for (const dir of DIRECTIONS) {
             const arrow = this.controls.querySelector(`.${dir}`)
             if (!arrow)
@@ -35,15 +35,19 @@ export default class Input {
         const { key } = evt
         switch (key) {
             case "ArrowRight":
+            case "3":
                 this.fire("right")
                 break
             case "ArrowLeft":
+            case "7":
                 this.fire("left")
                 break
             case "ArrowUp":
+            case "9":
                 this.fire("up")
                 break
             case "ArrowDown":
+            case "1":
                 this.fire("down")
                 break
             default:

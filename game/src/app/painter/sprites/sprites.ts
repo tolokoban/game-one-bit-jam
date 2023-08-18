@@ -68,9 +68,10 @@ export default class Sprites {
             attCorner: 2,
             attUV: 2,
         })
+        const BASE = -0.5
         attribsVert.set(
             "attCorner",
-            new Float32Array([-1, 0, +1, 0, -1, +2, +1, +2])
+            new Float32Array([-1, BASE, +1, BASE, -1, BASE + 2, +1, BASE + 2])
         )
         attribsVert.set("attUV", new Float32Array([0, 1, 1, 1, 0, 0, 1, 0]))
         attribsVert.update(gl, bufferVert, 4, false)

@@ -1,6 +1,6 @@
-export function getById(elementId: string): HTMLElement {
-    const elem = document.getElementById(elementId)
-    if (!elem) throw Error(`No element found with id "${elementId}"!`)
+export function getElement(selector: string): HTMLElement {
+    const elem = document.body.querySelector(selector)
+    if (!elem) throw Error(`No element found with selector "${selector}"!`)
 
-    return elem
+    return elem as HTMLElement
 }

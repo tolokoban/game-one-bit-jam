@@ -8,7 +8,8 @@ class ThemeClass {
     private front = COLOR_DARK
 
     constructor() {
-        this.update()
+        if (Math.random() < 0.5) this.setDark()
+        else this.setLight()
     }
 
     get backR() {
