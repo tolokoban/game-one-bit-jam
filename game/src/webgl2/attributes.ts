@@ -11,10 +11,17 @@ interface AttributeInternalRepresentation {
     dimension: number
     divisor: number
     bytesPerElement: number
+    bytesOffset: number
     getter(view: DataView, byteOffset: number): number
     setter(view: DataView, byteOffset: number, value: number): void
 }
 
+export enum Elem {
+    X = 0,
+    Y = 1,
+    Z = 2,
+    W = 3,
+}
 interface AttributesInternalRepresentations {
     [attribName: string]: AttributeInternalRepresentation
 }
@@ -24,6 +31,7 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
     private buffer: ArrayBuffer | undefined = undefined
     private readonly data: { [key: string]: ArrayBufferLike } = {}
     private readonly definitions: AttributesInternalRepresentations
+    private verticesCount = 0
 
     constructor(def: T, public readonly divisor = 0) {
         let stride = 0
@@ -33,7 +41,8 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
             data[key] = new ArrayBuffer(0)
             const dataDef = makeAttributeInternalRepresentation(
                 def[key],
-                divisor
+                divisor,
+                stride
             )
             definitions[key] = dataDef
             stride += dataDef.bytesPerElement * dataDef.dimension
@@ -41,6 +50,12 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
         this.data = data
         this.definitions = definitions
         this.stride = stride
+    }
+
+    debug() {
+        console.log("Vertices count:", this.verticesCount)
+        const data = new Float32Array(this.get())
+        console.log(data)
     }
 
     /**
@@ -82,15 +97,16 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
         }
     }
 
-    get(verticesCount: number): ArrayBuffer {
-        const byteLength = this.stride * verticesCount
+    get(verticesCount: number = 0): ArrayBuffer {
+        const count = verticesCount > 0 ? verticesCount : this.verticesCount
+        const byteLength = this.stride * count
         if (!this.buffer || this.buffer.byteLength < byteLength) {
-            this.checkIfWeHaveEnoughData(verticesCount)
+            this.checkIfWeHaveEnoughData(count)
             this.buffer = new ArrayBuffer(byteLength)
             const viewDestination = new DataView(this.buffer)
             let offsetDestination = 0
             const { data, definitions } = this
-            for (let vertex = 0; vertex < verticesCount; vertex++) {
+            for (let vertex = 0; vertex < count; vertex++) {
                 for (const key of Object.keys(definitions)) {
                     const def = definitions[key]
                     const buff: ArrayBufferLike = data[key]
@@ -118,6 +134,7 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
         verticesCount: number,
         dynamic: boolean
     ) {
+        this.verticesCount = verticesCount
         const data = this.get(verticesCount)
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
         gl.bufferData(
@@ -161,6 +178,25 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
         this.buffer = undefined
     }
 
+    poke(
+        attribName: keyof T,
+        vertexIndex: number,
+        element: Elem,
+        value: number
+    ) {
+        if (vertexIndex >= this.verticesCount) return
+
+        const data = this.get(this.verticesCount)
+        const view = new DataView(data)
+        const { setter, bytesPerElement, dimension, bytesOffset } =
+            this.definitions[attribName as string]
+        let offset =
+            bytesOffset +
+            vertexIndex * bytesPerElement * dimension +
+            bytesPerElement * element
+        setter(view, offset, value)
+    }
+
     private checkIfWeHaveEnoughData(verticesCount: number) {
         const { data, definitions } = this
         for (const key of Object.keys(definitions)) {
@@ -184,7 +220,8 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
 
 function makeAttributeInternalRepresentation(
     attribute: Partial<TgdTypeAttribute> | number,
-    divisor: number
+    divisor: number,
+    bytesOffset: number
 ): AttributeInternalRepresentation {
     const dataDef: TgdTypeAttribute =
         typeof attribute === "number"
@@ -200,7 +237,7 @@ function makeAttributeInternalRepresentation(
 
     switch (dataDef.type) {
         case "float":
-            return makeDataDefinitionFloat(dataDef, divisor)
+            return makeDataDefinitionFloat(dataDef, divisor, bytesOffset)
         default:
             throw Error(
                 `Unable to create a Data for an attribute of type "${dataDef.type}"!`
@@ -210,18 +247,20 @@ function makeAttributeInternalRepresentation(
 
 function makeDataDefinitionFloat(
     dataDef: TgdTypeAttribute,
-    divisor: number
+    divisor: number,
+    bytesOffset: number
 ): AttributeInternalRepresentation {
     const bytesPerElement = Float32Array.BYTES_PER_ELEMENT
     return {
         dimension: dataDef.dimension,
         divisor,
         bytesPerElement,
+        bytesOffset,
         getter(view: DataView, byteOffset: number) {
-            return view.getFloat32(byteOffset)
+            return view.getFloat32(byteOffset, true)
         },
         setter(view: DataView, byteOffset: number, value: number) {
-            view.setFloat32(byteOffset, value)
+            view.setFloat32(byteOffset, value, true)
         },
     }
 }

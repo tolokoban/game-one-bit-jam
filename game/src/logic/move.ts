@@ -50,6 +50,10 @@ export default class MoveLogic {
         }
     }
 
+    getDirection(): Direction {
+        return this.currentDir
+    }
+
     /**
      * @param delay Number of msec from previous call.
      */

@@ -1,5 +1,6 @@
 import { Theme } from "@/utils/theme"
 import {
+    Elem,
     TgdAttributes,
     createBuffer,
     createProgram,
@@ -10,16 +11,20 @@ import VERT from "./sprites.vert"
 import FRAG from "./sprites.frag"
 import Projection from "../../projection"
 import { createTexture } from "@/webgl2/texture"
+import MoveLogic, { Direction } from "@/logic/move"
+import { onKey } from "@/utils/events"
 
 export default class Sprites {
     private readonly projection: Projection
     private readonly vao: WebGLVertexArrayObject
     private readonly prg: WebGLProgram
+    private readonly buffer: WebGLBuffer
     private readonly uniSize: WebGLUniformLocation
     private readonly uniColor0: WebGLUniformLocation
     private readonly uniColor1: WebGLUniformLocation
     private readonly uniMatrix: WebGLUniformLocation
     private readonly uniAtlas: WebGLUniformLocation
+    private readonly verticesCount: number
     private readonly attribsInst: TgdAttributes<{
         attCenter: number
         attAtlas: number
@@ -45,8 +50,11 @@ export default class Sprites {
 
     constructor(
         private readonly gl: WebGL2RenderingContext,
-        atlas: HTMLCanvasElement
+        atlas: HTMLCanvasElement,
+        private readonly movePacMan: MoveLogic,
+        private readonly moveMonsters: MoveLogic[]
     ) {
+        this.verticesCount = 1 + moveMonsters.length
         this.projection = new Projection(gl)
         createTexture(gl, atlas)
         const prg = createProgram(gl, { vert: VERT, frag: FRAG })
@@ -76,13 +84,12 @@ export default class Sprites {
         )
         attribsInst.set(
             "attCenter",
-            new Float32Array([0, 0, 3, 0, 3, 2, 0, 2, 0, 4, 3, 4])
+            new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         )
-        const grid = [0, 0, 1, 0, 2, 0, 3, 0, 2, 0, 0, 2].map((value, index) =>
-            (index & 1) === 0 ? value * 0.25 : value * 0.5
+        attribsInst.set(
+            "attAtlas",
+            new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         )
-        console.log("🚀 [sprites] grid = ", grid) // @FIXME: Remove this line written on 2023-08-17 at 23:28
-        attribsInst.set("attAtlas", new Float32Array(grid))
         attribsInst.update(gl, bufferInst, 6, true)
         const vao = createVertexArray(gl)
         gl.bindVertexArray(vao)
@@ -92,7 +99,9 @@ export default class Sprites {
         this.gl = gl
         this.prg = prg
         this.vao = vao
+        this.buffer = bufferInst
         this.attribsInst = attribsInst
+        onKey("Enter", () => attribsInst.debug())
     }
 
     readonly paint = (time: number) => {
@@ -116,6 +125,7 @@ export default class Sprites {
         this.checkSize()
         this.updateMatrix()
         this.updateColors()
+        this.updatePositions()
         gl.enable(gl.BLEND)
         gl.blendEquation(gl.FUNC_ADD)
         gl.blendFuncSeparate(
@@ -131,7 +141,7 @@ export default class Sprites {
         gl.uniformMatrix4fv(uniMatrix, true, this.matrix)
         gl.uniform1i(uniAtlas, 0)
         gl.bindVertexArray(vao)
-        gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, 6) // 6)
+        gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, this.verticesCount)
     }
 
     private updateColors() {
@@ -141,12 +151,24 @@ export default class Sprites {
         this.red1 = Theme.frontR
         this.green1 = Theme.frontG
         this.blue1 = Theme.frontB
-        // console.log(
-        //     "🚀 [sprites] Theme.frontR, Theme.frontG, Theme.frontB = ",
-        //     Theme.frontR,
-        //     Theme.frontG,
-        //     Theme.frontB
-        // ) // @FIXME: Remove this line written on 2023-08-17 at 23:09
+    }
+
+    private updatePositions() {
+        const { attribsInst, movePacMan, moveMonsters } = this
+        const centerX = movePacMan.x
+        const centerY = movePacMan.y
+        const pacmanDir = movePacMan.getDirection()
+        if (pacmanDir !== Direction.Stop) {
+            attribsInst.poke("attAtlas", 0, 0, dir2U(pacmanDir))
+            attribsInst.debug()
+        }
+        let index = 1
+        for (const monster of moveMonsters) {
+            attribsInst.poke("attCenter", index, Elem.X, monster.x - centerX)
+            attribsInst.poke("attCenter", index, Elem.Y, monster.y - centerY)
+            index++
+        }
+        attribsInst.update(this.gl, this.buffer, this.verticesCount, true)
     }
 
     private checkSize(): boolean {
@@ -176,3 +198,17 @@ const SZ = 10
 const X = 3
 const Y = 7
 const Z = 11
+
+function dir2U(dir: Direction): number {
+    switch (dir) {
+        case Direction.Right:
+            return 0
+        case Direction.Up:
+            return 0.25
+        case Direction.Left:
+            return 0.5
+        case Direction.Down:
+            return 0.75
+    }
+    return 0
+}

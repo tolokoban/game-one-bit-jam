@@ -28,7 +28,9 @@ async function start() {
     const gl = canvas.getContext("webgl2")
     if (!gl) throw Error("Unable to get WebGL2 context!")
 
-    const painterSprites = new Sprites(gl, atlas)
+    const movePacMan = new MoveLogic(LEVEL1, 0, 0)
+    const moveMonsters: MoveLogic[] = []
+    const painterSprites = new Sprites(gl, atlas, movePacMan, moveMonsters)
     const dataMaze = await loadAttributes("level1")
     const painterMaze = new Painter(gl, dataMaze)
     painterMaze.alpha = 0.2
@@ -40,21 +42,20 @@ async function start() {
     painterPacMan.size = 1
     painterPacMan.zoom = 0.2
     let previousTime = 0
-    const logic = new MoveLogic(LEVEL1, 0, 0)
 
     window.addEventListener("keydown", (evt: KeyboardEvent) => {
         const { key } = evt
         if ("0+-*/".includes(key)) evt.preventDefault()
 
         if (key === "0") {
-            if (logic.x === 0) {
-                logic.x = 16
-                logic.y = 16
+            if (movePacMan.x === 0) {
+                movePacMan.x = 16
+                movePacMan.y = 16
             } else {
-                logic.x = 0
-                logic.y = 0
+                movePacMan.x = 0
+                movePacMan.y = 0
             }
-            logic.setDirection(Direction.Stop)
+            movePacMan.setDirection(Direction.Stop)
         }
         if (key === "+") ZOOM += 1e-3
         if (key === "-") ZOOM -= 1e-3
@@ -68,16 +69,16 @@ async function start() {
 
     new Input({
         onLeft() {
-            logic.setDirection(Direction.Left)
+            movePacMan.setDirection(Direction.Left)
         },
         onRight() {
-            logic.setDirection(Direction.Right)
+            movePacMan.setDirection(Direction.Right)
         },
         onDown() {
-            logic.setDirection(Direction.Down)
+            movePacMan.setDirection(Direction.Down)
         },
         onUp() {
-            logic.setDirection(Direction.Up)
+            movePacMan.setDirection(Direction.Up)
         },
     })
     const paint = (time: number) => {
@@ -98,9 +99,9 @@ async function start() {
         // Logic
         if (previousTime > 0) {
             const delay = Math.min(500, time - previousTime)
-            logic.update(delay)
-            const x = logic.x
-            const y = logic.y
+            movePacMan.update(delay)
+            const x = movePacMan.x
+            const y = movePacMan.y
             painterMaze.x = A * x - A * y
             painterMaze.y = -B * x - B * y
         }
