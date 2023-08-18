@@ -52,11 +52,41 @@ canvas#canvas,
     position: fixed;
     width: 100%;
     height: 100%;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
     background: var(--theme-color-back);
     color: var(--theme-color-front);
     pointer-events: all;
+}
+
+#hall-of-fame > div {
+    flex: 1 1 50%;
+    display: grid;
+    place-items: center;
+}
+
+#scores {
+    background: var(--theme-color-front);
+    color: var(--theme-color-back);
+    padding: 0.5em 1em;
+    border-radius: 0.125em;
+    box-shadow: 0 0.25em 0.5em var(--theme-color-front);
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.25em 1em;
+    font-size: 90%;
+}
+
+p {
+    text-align: center;
+}
+
+@media (orientation: portrait) {
+    #hall-of-fame {
+        flex-direction: column;
+    }
 }
 
 body.play #hall-of-fame {

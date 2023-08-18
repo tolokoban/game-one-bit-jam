@@ -6,6 +6,7 @@ import { Theme } from "./utils/theme"
 
 import "./index.css"
 import Game from "./app/game"
+import { displayScores } from "./utils/scores"
 
 /**
  * These Magic Numbers have been set manually by eye control.
@@ -15,6 +16,7 @@ let PROJ_A = 0.236
 let PROJ_B = PROJ_A * ZOOM
 
 async function start() {
+    displayScores()
     const atlas = await TgdLoadImage.loadInCanvas("./atlas.png")
     if (!atlas) throw Error('Unable to load image "./atlas.png"!')
 
