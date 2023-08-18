@@ -63,6 +63,7 @@ export default class Game {
     start() {
         if (this.playing) return
 
+        this.points = 0
         this.logics = this.reset()
         this.playing = true
         this.lastTime = -1
