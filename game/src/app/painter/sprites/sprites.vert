@@ -25,6 +25,6 @@ const mat2 ISO = mat2(
 void main() {
     varUV = attUV * vec2(0.25, 1.0/3.0) + attAtlas;
     vec2 xy = attCorner * uniSize + ISO * attCenter;
-    float z = 1.0 - max(attCenter.x, attCenter.y) / 32.0;
+    float z = 0.5 - max(attCenter.x, attCenter.y) / 64.0;
     gl_Position = uniMatrix * vec4(xy, z, 1.0);
 }

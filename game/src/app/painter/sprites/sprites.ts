@@ -52,9 +52,10 @@ export default class Sprites {
         private readonly gl: WebGL2RenderingContext,
         atlas: HTMLCanvasElement,
         private readonly movePacMan: MoveLogic,
-        private readonly moveMonsters: MoveLogic[]
+        private readonly moveMonsters: MoveLogic[],
+        private readonly moveDiamond: MoveLogic
     ) {
-        this.verticesCount = 1 + moveMonsters.length
+        this.verticesCount = 2 + moveMonsters.length
         this.projection = new Projection(gl)
         createTexture(gl, atlas)
         const prg = createProgram(gl, { vert: VERT, frag: FRAG })
@@ -122,14 +123,10 @@ export default class Sprites {
         this.updateMatrix()
         this.updateColors()
         this.updatePositions()
-        gl.enable(gl.BLEND)
-        gl.blendEquation(gl.FUNC_ADD)
-        gl.blendFuncSeparate(
-            gl.SRC_ALPHA,
-            gl.ONE_MINUS_SRC_ALPHA,
-            gl.ONE,
-            gl.ONE
-        )
+        gl.enable(gl.DEPTH_TEST)
+        gl.depthFunc(gl.LESS)
+        gl.depthMask(true)
+        gl.depthRange(0, 1)
         gl.useProgram(prg)
         gl.uniform1f(uniSize, size)
         gl.uniform3f(uniColor0, red0, green0, blue0)
@@ -150,7 +147,7 @@ export default class Sprites {
     }
 
     private updatePositions() {
-        const { attribsInst, movePacMan, moveMonsters } = this
+        const { attribsInst, movePacMan, moveMonsters, moveDiamond } = this
         const centerX = movePacMan.x
         const centerY = movePacMan.y
         const pacmanDir = movePacMan.getDirection()
@@ -168,6 +165,10 @@ export default class Sprites {
             attribsInst.poke("attAtlas", index, 1, 0.3333333333333333333)
             index++
         }
+        attribsInst.poke("attCenter", index, Elem.X, moveDiamond.x - centerX)
+        attribsInst.poke("attCenter", index, Elem.Y, moveDiamond.y - centerY)
+        attribsInst.poke("attAtlas", index, Elem.X, 0)
+        attribsInst.poke("attAtlas", index, Elem.Y, 0.6666666666)
         attribsInst.update(this.gl, this.buffer, this.verticesCount, true)
     }
 

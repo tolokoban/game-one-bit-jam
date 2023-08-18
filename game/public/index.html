@@ -20,9 +20,10 @@
 
     <body class="">
         <noscript>You need to enable JavaScript to run this app.</noscript>
-        <audio id="music" src="./sound/music.ogg" hidden></audio>
+        <audio id="music" src="./sound/music.ogg" loop hidden></audio>
         <div id="game-screen">
             <canvas id="canvas"></canvas>
+            <div id="points">0 points</div>
             <svg
                 id="controls-h"
                 xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +34,7 @@
                 preserveAspectRatio="xMidYMid"
             >
                 <defs>
-                    <path id="triangle" d="M0,45l12,-25h-24z" />
+                    <path id="triangle" d="M0,45l20,-40h-40z" />
                 </defs>
                 <g transform="scale(1, 0.6) rotate(45)">
                     <circle cx="0" cy="0" r="50" stroke="none" />
@@ -61,7 +62,7 @@
                 preserveAspectRatio="xMidYMid"
             >
                 <defs>
-                    <path id="triangle" d="M0,45l12,-25h-24z" />
+                    <path id="triangle" d="M0,45l15,-40h-30z" />
                 </defs>
                 <g transform="scale(1, 0.6) rotate(45)">
                     <circle cx="0" cy="0" r="50" stroke="none" />

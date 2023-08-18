@@ -32,17 +32,6 @@ function makePivotHandler(
     const hunt = new Hunt(level)
     return (col: number, row: number) => {
         const dir = hunt.getDirection(col, row, target.x, target.y)
-        console.log(
-            "Hunt:",
-            "from",
-            col,
-            row,
-            " to",
-            target.x,
-            target.y,
-            " -> ",
-            dir
-        )
         return dir
     }
 }

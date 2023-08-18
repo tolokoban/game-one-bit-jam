@@ -144,3 +144,12 @@ button:active {
     border: 0.25em solid var(--theme-color-front-90);
     background: var(--theme-color-front-10);
 }
+
+#points {
+    position: fixed;
+    top: 0;
+    right: 0;
+    font-weight: bolder;
+    color: var(--theme-color-front);
+    text-shadow: 0.04em 0.04em var(--theme-color-back);
+}

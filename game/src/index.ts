@@ -27,10 +27,6 @@ async function start() {
     })
 
     onClick("#start-button", () => {
-        const music = getElement("#music") as HTMLAudioElement
-        music.volume = 0.5
-        music.play()
-        music.playbackRate = 0.8
         game.start()
         showPage("game-screen")
     })

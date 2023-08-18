@@ -1,3 +1,4 @@
+import { TgdAttributes } from "./../webgl2/attributes"
 import { LEVEL1 } from "@/levels/level"
 import MonsterMoveLogic, { PositionProvider } from "@/logic/monster"
 import PacManMoveLogic from "@/logic/pacman"
@@ -7,6 +8,11 @@ import Sprites from "./painter/sprites"
 import { Direction } from "@/logic/move"
 import Input from "@/utils/input"
 import { showPage } from "@/utils/page"
+import DiamondMoveLogic from "@/logic/diamond"
+import { getElement } from "@/utils/dom"
+import { saveScore } from "@/utils/scores"
+
+const POINTS = getElement("#points")
 
 export default class Game {
     private readonly level = LEVEL1
@@ -14,10 +20,13 @@ export default class Game {
         pacman: PacManMoveLogic
         monsters: MonsterMoveLogic[]
         sprites: Sprites
+        diamond: DiamondMoveLogic
         maze: PainterMaze
     }
     private playing = false
     private lastTime = -1
+    private _points = 0
+    private lastDiamondTime = 0
 
     constructor(
         private readonly gl: WebGL2RenderingContext,
@@ -42,6 +51,14 @@ export default class Game {
         })
     }
 
+    get points() {
+        return this._points
+    }
+    set points(value: number) {
+        this._points = value
+        POINTS.textContent = `${value} points`
+    }
+
     start() {
         if (this.playing) return
 
@@ -58,7 +75,7 @@ export default class Game {
     private readonly paint = (time: number) => {
         const delay = this.computeDelay(time)
         if (delay > 0) {
-            const { sprites, pacman, monsters } = this.logics
+            const { sprites, pacman, monsters, diamond } = this.logics
             this.clearBackground()
             this.paintMaze(time)
             sprites.paint(time)
@@ -70,7 +87,17 @@ export default class Game {
                 if (collide(pacman, monster)) {
                     this.stop()
                     showPage("game-over")
+                    saveScore(this.points)
                 }
+            }
+            if (collide(pacman, diamond)) {
+                diamond.toggle()
+                Theme.toggle()
+                const length = time - this.lastDiamondTime
+                this.lastDiamondTime = time
+                const win = Math.ceil(1e6 / length)
+                console.log("🚀 [game] win = ", win) // @FIXME: Remove this line written on 2023-08-18 at 18:56
+                this.points += win
             }
         }
         if (this.playing) window.requestAnimationFrame(this.paint)
@@ -115,14 +142,30 @@ export default class Game {
 
     private reset() {
         const pacman = new PacManMoveLogic(this.level, 3, 2)
-        const monsters = [new MonsterMoveLogic(this.level, 0, 0, pacman, 0.5)]
-        const sprites = new Sprites(this.gl, this.atlas, pacman, monsters)
+        const monsters: MonsterMoveLogic[] = [
+            new MonsterMoveLogic(this.level, 0, 0, pacman, 0.5),
+            new MonsterMoveLogic(this.level, 0, this.level.rows - 1, pacman, 1),
+            new MonsterMoveLogic(this.level, this.level.cols - 1, 0, pacman, 2),
+        ]
         const maze = new PainterMaze(this.gl, this.particles)
+        const diamond = new DiamondMoveLogic(
+            this.level,
+            this.level.cols - 1,
+            this.level.rows - 1
+        )
+        const sprites = new Sprites(
+            this.gl,
+            this.atlas,
+            pacman,
+            monsters,
+            diamond
+        )
         return {
             pacman,
             monsters,
             sprites,
             maze,
+            diamond,
         }
     }
 }

@@ -1,14 +1,14 @@
 import { getElement } from "./dom"
 
 const DEFAULT: Array<[name: string, score: string]> = [
-    ["FABIEN", "128000"],
-    ["SAMANT", "64000"],
-    ["MARY", "32000"],
-    ["JOHN", "16000"],
-    ["ALFRED", "8000"],
-    ["HENRY", "4000"],
-    ["MONKEY", "2000"],
-    ["FLOWER", "1000"],
+    ["FABIEN", "12800"],
+    ["SAMANT", "6400"],
+    ["MARY", "3200"],
+    ["JOHN", "1600"],
+    ["ALFRED", "800"],
+    ["HENRY", "400"],
+    ["MONKEY", "200"],
+    ["FLOWER", "100"],
 ]
 
 export function displayScores() {
@@ -23,6 +23,16 @@ export function displayScores() {
         container.appendChild(nameElem)
         container.appendChild(scoreElem)
     }
+}
+
+export function saveScore(points: number) {
+    const items = [...loadScores(), ["(You)", `${points}`]]
+        .sort(sortItems)
+        .slice(0, DEFAULT.length)
+    window.localStorage.setItem(
+        "highscores",
+        items.map(([a, b]) => `${a}=${b}`).join(",")
+    )
 }
 
 function loadScores() {

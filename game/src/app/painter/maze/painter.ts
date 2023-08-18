@@ -91,6 +91,8 @@ export default class Game {
         } = this
         this.checkSize()
         this.updateMatrix()
+        gl.disable(gl.DEPTH_TEST)
+        gl.depthMask(false)
         gl.enable(gl.BLEND)
         gl.blendEquation(gl.FUNC_ADD)
         gl.blendFuncSeparate(

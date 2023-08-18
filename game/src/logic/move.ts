@@ -28,7 +28,7 @@ export default abstract class MoveLogic {
     public speed = 3e-3
 
     constructor(
-        private readonly level: Level,
+        protected readonly level: Level,
         x: number,
         y: number,
         private readonly pivotHandler?: PivotHandler
