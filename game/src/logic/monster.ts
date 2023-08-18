@@ -9,8 +9,6 @@ interface PositionProvider {
 }
 
 export default class MonsterMoveLogic extends MoveLogic {
-    private static pivotHandler: PivotHandler | undefined = undefined
-
     constructor(
         level: Level,
         x: number,
@@ -18,22 +16,12 @@ export default class MonsterMoveLogic extends MoveLogic {
         target: PositionProvider,
         speed: number
     ) {
-        super(level, x, y, MonsterMoveLogic.getPivotHandler(level, target))
+        super(level, x, y, makePivotHandler(level, target))
         this.speed = speed * 1e-3
     }
 
     update(delay: number): void {
         super.update(delay)
-    }
-
-    /**
-     * The pivotHandler is a singleton!
-     */
-    private static getPivotHandler(level: Level, target: PositionProvider) {
-        if (!MonsterMoveLogic.pivotHandler) {
-            MonsterMoveLogic.pivotHandler = makePivotHandler(level, target)
-        }
-        return MonsterMoveLogic.pivotHandler
     }
 }
 
@@ -42,6 +30,19 @@ function makePivotHandler(
     target: PositionProvider
 ): PivotHandler {
     const hunt = new Hunt(level)
-    return (col: number, row: number) =>
-        hunt.getDirection(col, row, target.x, target.y)
+    return (col: number, row: number) => {
+        const dir = hunt.getDirection(col, row, target.x, target.y)
+        console.log(
+            "Hunt:",
+            "from",
+            col,
+            row,
+            " to",
+            target.x,
+            target.y,
+            " -> ",
+            dir
+        )
+        return dir
+    }
 }
