@@ -3,6 +3,7 @@ import VERT from "./painter.vert"
 import FRAG from "./painter.frag"
 import Projection from "../../projection"
 
+const DENSITY = 0.5
 export default class Game {
     private readonly projection: Projection
     private readonly vao: WebGLVertexArrayObject
@@ -67,7 +68,7 @@ export default class Game {
         gl.bindVertexArray(null)
         this.gl = gl
         this.vao = vao
-        this.count = data.length >> 2
+        this.count = Math.floor((data.length >> 2) * DENSITY)
         console.log("Particles count:", this.count)
     }
 
@@ -119,7 +120,10 @@ export default class Game {
         const referenceSurface = 1080 // 3686400
         const surface = Math.min(projection.width, projection.height)
         const density = Math.min(1, surface / referenceSurface)
-        this.count = Math.floor((this.data.length >> 2) * Math.min(1, density))
+        this.count = Math.floor(
+            (this.data.length >> 2) * Math.min(1, density) * DENSITY
+        )
+        console.log("Particles count:", this.count)
         return true
     }
 

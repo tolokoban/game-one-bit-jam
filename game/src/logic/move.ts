@@ -10,7 +10,10 @@ export enum Direction {
     Left = 2,
     Right = 3,
     Stop = 4,
+    Continue,
 }
+
+export type PivotHandler = (x: number, y: number) => Direction
 
 const DIRECTIONS_X = [0, 0, -1, 1, 0]
 const DIRECTIONS_Y = [-1, 1, 0, 0, 0]
@@ -24,12 +27,20 @@ export default class MoveLogic {
     public y = 0
     public speed = 3e-3
 
-    constructor(private readonly level: Level, x: number, y: number) {
+    constructor(
+        private readonly level: Level,
+        x: number,
+        y: number,
+        private readonly pivotHandler?: PivotHandler
+    ) {
         this.debugger = new DebugMove(level)
         this.x = x
         this.y = y
         this.currentDir = Direction.Stop
         this.nextDir = Direction.Stop
+        if (pivotHandler) {
+            this.setDirection(pivotHandler(x, y))
+        }
     }
 
     setDirection(nextDirection: Direction) {
@@ -58,12 +69,27 @@ export default class MoveLogic {
      * @param delay Number of msec from previous call.
      */
     update(delay: number) {
+        this.privateUpdate(delay, this.pivotHandler)
+    }
+
+    private privateUpdate(delay: number, pivotHandler?: PivotHandler) {
         const { x, y, speed, currentDir, nextDir } = this
         // this.debugger.update(x, y)
         const [pivotX, pivotY] = getCellCenter(x, y)
         const nextX = x + DIRECTIONS_X[currentDir] * speed * delay
         const nextY = y + DIRECTIONS_Y[currentDir] * speed * delay
         if (areInOrder([x, y], [pivotX, pivotY], [nextX, nextY])) {
+            if (pivotHandler) {
+                // Anytime we get to the center of a cell,
+                // we can decide to change direction according
+                // to an external function: pivotHandler.
+                const newDirection = pivotHandler(pivotX, pivotY)
+                if (newDirection !== Direction.Continue) {
+                    this.setDirection(newDirection)
+                    this.privateUpdate(delay)
+                    return
+                }
+            }
             if (nextDir !== currentDir) {
                 // We just passed the center of a cell.
                 // We try to change direction if no wall interfers.

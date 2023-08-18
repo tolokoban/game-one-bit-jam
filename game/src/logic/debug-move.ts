@@ -13,6 +13,6 @@ export default class DebugMove {
 
         this.lastCol = col
         this.lastRow = row
-        this.level.log(col, row)
+        this.level.debug(col, row)
     }
 }

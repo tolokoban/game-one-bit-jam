@@ -40,7 +40,7 @@ export default class Sprites {
     public x = 0
     public y = 0
     public zoom = 1
-    public size = 0.14
+    public size = 0.2
     public red0 = 0
     public green0 = 0
     public blue0 = 0
@@ -82,15 +82,10 @@ export default class Sprites {
             },
             1
         )
-        attribsInst.set(
-            "attCenter",
-            new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-        )
-        attribsInst.set(
-            "attAtlas",
-            new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-        )
-        attribsInst.update(gl, bufferInst, 6, true)
+        const zeros = new Array(2 * this.verticesCount).fill(0)
+        attribsInst.set("attCenter", new Float32Array(zeros))
+        attribsInst.set("attAtlas", new Float32Array(zeros))
+        attribsInst.update(gl, bufferInst, this.verticesCount, true)
         const vao = createVertexArray(gl)
         gl.bindVertexArray(vao)
         attribsVert.define(gl, prg, bufferVert)
@@ -160,12 +155,16 @@ export default class Sprites {
         const pacmanDir = movePacMan.getDirection()
         if (pacmanDir !== Direction.Stop) {
             attribsInst.poke("attAtlas", 0, 0, dir2U(pacmanDir))
-            attribsInst.debug()
         }
         let index = 1
         for (const monster of moveMonsters) {
             attribsInst.poke("attCenter", index, Elem.X, monster.x - centerX)
             attribsInst.poke("attCenter", index, Elem.Y, monster.y - centerY)
+            const monsterDir = monster.getDirection()
+            if (monsterDir !== Direction.Stop) {
+                attribsInst.poke("attAtlas", index, 0, dir2U(monsterDir))
+            }
+            attribsInst.poke("attAtlas", index, 1, 0.3333333333333333333)
             index++
         }
         attribsInst.update(this.gl, this.buffer, this.verticesCount, true)

@@ -10,7 +10,7 @@ export default class Level {
         this.cols = firstRow.length
     }
 
-    log(x = -1, y = -1) {
+    debug(x = -1, y = -1) {
         const { data } = this
         let color = "#0f0"
         const text = `%cCol: ${x}, Row: ${y}\n${data

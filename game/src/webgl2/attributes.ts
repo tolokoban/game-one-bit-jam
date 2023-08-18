@@ -1,3 +1,5 @@
+import { range } from "@/utils/range"
+
 export interface TgdTypeAttribute {
     type: "float"
     dimension: number
@@ -53,9 +55,21 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
     }
 
     debug() {
-        console.log("Vertices count:", this.verticesCount)
+        const { definitions, verticesCount } = this
+        console.log("Vertices count:", verticesCount)
         const data = new Float32Array(this.get())
         console.log(data)
+        for (const name of Object.keys(definitions)) {
+            const def = definitions[name]
+            console.log(
+                name,
+                range(verticesCount).map(index =>
+                    range(def.dimension).map(elem =>
+                        this.peek(name, index, elem)
+                    )
+                )
+            )
+        }
     }
 
     /**
@@ -188,13 +202,23 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
 
         const data = this.get(this.verticesCount)
         const view = new DataView(data)
-        const { setter, bytesPerElement, dimension, bytesOffset } =
+        const { setter, bytesPerElement, bytesOffset } =
             this.definitions[attribName as string]
         let offset =
-            bytesOffset +
-            vertexIndex * bytesPerElement * dimension +
-            bytesPerElement * element
+            bytesOffset + vertexIndex * this.stride + bytesPerElement * element
         setter(view, offset, value)
+    }
+
+    peek(attribName: keyof T, vertexIndex: number, element: Elem) {
+        if (vertexIndex >= this.verticesCount) return 0
+
+        const data = this.get(this.verticesCount)
+        const view = new DataView(data)
+        const { getter, bytesPerElement, dimension, bytesOffset } =
+            this.definitions[attribName as string]
+        let offset =
+            bytesOffset + vertexIndex * this.stride + bytesPerElement * element
+        return getter(view, offset)
     }
 
     private checkIfWeHaveEnoughData(verticesCount: number) {
@@ -211,7 +235,7 @@ export class TgdAttributes<T extends TgdTypeAttributesDefinitions> {
                 def.bytesPerElement * def.dimension * verticesCount
             if (buff.byteLength < byteLength) {
                 throw Error(
-                    `Attribute "${key}" has only ${buff.byteLength} bytes, but we need at least ${byteLength}!`
+                    `Attribute "${key}" has only ${buff.byteLength} bytes, but we need at least ${byteLength} since you asked for ${verticesCount} vertices!`
                 )
             }
         }
