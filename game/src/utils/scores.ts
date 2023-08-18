@@ -1,14 +1,14 @@
 import { getElement } from "./dom"
 
 const DEFAULT: Array<[name: string, score: string]> = [
-    ["FABIEN", "12800"],
-    ["SAMANT", "6400"],
-    ["MARY", "3200"],
-    ["JOHN", "1600"],
-    ["ALFRED", "800"],
-    ["HENRY", "400"],
-    ["MONKEY", "200"],
-    ["FLOWER", "100"],
+    ["FABIEN", "10000"],
+    ["SAMANT", "4000"],
+    ["MARY", "2000"],
+    ["JOHN", "1000"],
+    ["ALFRED", "400"],
+    ["HENRY", "200"],
+    ["MONKEY", "100"],
+    ["FLOWER", "50"],
 ]
 
 export function displayScores() {
@@ -33,6 +33,7 @@ export function saveScore(points: number) {
         "highscores",
         items.map(([a, b]) => `${a}=${b}`).join(",")
     )
+    displayScores()
 }
 
 function loadScores() {

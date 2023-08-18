@@ -62,7 +62,7 @@ export default class Sprites {
         this.uniSize = getUniformLocation(gl, prg, "uniSize")
         this.uniAtlas = getUniformLocation(gl, prg, "uniAtlas")
         this.uniColor0 = getUniformLocation(gl, prg, "uniColor0")
-        this.uniColor1 = getUniformLocation(gl, prg, "uniColor0")
+        this.uniColor1 = getUniformLocation(gl, prg, "uniColor1")
         this.uniMatrix = getUniformLocation(gl, prg, "uniMatrix")
         const bufferVert = createBuffer(gl)
         const attribsVert = new TgdAttributes({
