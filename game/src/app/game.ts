@@ -146,9 +146,21 @@ export default class Game {
     private reset() {
         const pacman = new PacManMoveLogic(this.level, 3, 2)
         const monsters: MonsterMoveLogic[] = [
-            new MonsterMoveLogic(this.level, 0, 0, pacman, 0.5),
-            new MonsterMoveLogic(this.level, 0, this.level.rows - 1, pacman, 1),
-            new MonsterMoveLogic(this.level, this.level.cols - 1, 0, pacman, 2),
+            new MonsterMoveLogic(this.level, 0, 0, pacman, 1),
+            new MonsterMoveLogic(
+                this.level,
+                0,
+                this.level.rows - 1,
+                pacman,
+                1.6
+            ),
+            new MonsterMoveLogic(
+                this.level,
+                this.level.cols - 1,
+                0,
+                pacman,
+                2.2
+            ),
         ]
         const maze = new PainterMaze(this.gl, this.particles)
         const diamond = new DiamondMoveLogic(
