@@ -1,21 +1,16 @@
 import { loadAttributes } from "./loader"
 import { getElement } from "./utils/dom"
-import { onKey } from "./utils/events"
+import { onClick, onKey } from "./utils/events"
 import { TgdLoadImage } from "./utils/load"
 import { Theme } from "./utils/theme"
 
 import "./index.css"
 import Game from "./app/game"
 import { displayScores } from "./utils/scores"
-
-/**
- * These Magic Numbers have been set manually by eye control.
- */
-let ZOOM = 0.579
-let PROJ_A = 0.236
-let PROJ_B = PROJ_A * ZOOM
+import { showPage } from "./utils/page"
 
 async function start() {
+    showPage("hall-of-fame")
     displayScores()
     const atlas = await TgdLoadImage.loadInCanvas("./atlas.png")
     if (!atlas) throw Error('Unable to load image "./atlas.png"!')
@@ -31,20 +26,15 @@ async function start() {
         Theme.toggle()
     })
 
-    const startButton = getElement("#start-button")
-    startButton.addEventListener("click", () => {
-        document.body.classList.add("play")
+    onClick("#start-button", () => {
         const music = getElement("#music") as HTMLAudioElement
         music.volume = 0.5
-        const gameScreen = getElement("#game-screen") as HTMLDivElement
-        const go = () => {
-            music.play()
-            music.playbackRate = 0.8
-            // window.requestAnimationFrame(paint)
-            game.start()
-        }
-        gameScreen.requestFullscreen().then(go).catch(go)
+        music.play()
+        music.playbackRate = 0.8
+        game.start()
+        showPage("game-screen")
     })
+    onClick("#game-over", () => showPage("hall-of-fame"))
     const splash = getElement("#splash-screen")
     splash.classList.add("vanish")
     window.setTimeout(() => splash.parentNode?.removeChild(splash), 1000)

@@ -1,11 +1,12 @@
 import { LEVEL1 } from "@/levels/level"
-import MonsterMoveLogic from "@/logic/monster"
+import MonsterMoveLogic, { PositionProvider } from "@/logic/monster"
 import PacManMoveLogic from "@/logic/pacman"
 import { Theme } from "@/utils/theme"
 import PainterMaze from "./painter/maze"
 import Sprites from "./painter/sprites"
 import { Direction } from "@/logic/move"
 import Input from "@/utils/input"
+import { showPage } from "@/utils/page"
 
 export default class Game {
     private readonly level = LEVEL1
@@ -50,6 +51,10 @@ export default class Game {
         window.requestAnimationFrame(this.paint)
     }
 
+    stop() {
+        this.playing = false
+    }
+
     private readonly paint = (time: number) => {
         const delay = this.computeDelay(time)
         if (delay > 0) {
@@ -62,6 +67,10 @@ export default class Game {
             pacman.update(delay)
             for (const monster of monsters) {
                 monster.update(delay)
+                if (collide(pacman, monster)) {
+                    this.stop()
+                    showPage("game-over")
+                }
             }
         }
         if (this.playing) window.requestAnimationFrame(this.paint)
@@ -116,6 +125,14 @@ export default class Game {
             maze,
         }
     }
+}
+
+function collide(
+    { x: x1, y: y1 }: PositionProvider,
+    { x: x2, y: y2 }: PositionProvider
+): boolean {
+    const dist = Math.abs(x1 - x2) + Math.abs(y1 - y2)
+    return dist < 0.5
 }
 
 /**

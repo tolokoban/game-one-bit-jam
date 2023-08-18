@@ -11,7 +11,7 @@ canvas#canvas,
     height: 100%;
 }
 
-#controls {
+#controls-h {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -20,38 +20,63 @@ canvas#canvas,
     margin: 0;
 }
 
+#controls-v {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 50vmin;
+    height: 30vmin;
+    margin: 0;
+}
+
 @media (hover: hover) {
-    #controls {
+    #controls-h,
+    #controls-v {
         display: none;
     }
 }
 
-#controls circle {
+#controls-h circle,
+#controls-v circle {
     fill: var(--theme-color-front-50);
     transition: 0.2s all;
 }
 
-#controls .left,
-#controls .right,
-#controls .up,
-#controls .down {
+#controls-h .left,
+#controls-h .right,
+#controls-v .up,
+#controls-v .down {
     fill: var(--theme-color-back);
     stroke: var(--theme-color-back);
-    opacity: 0.4;
+    opacity: 0.7;
     transition: 0.2s all;
 }
 
-#controls.left .left,
-#controls.right .right,
-#controls.up .up,
-#controls.down .down {
+#controls-h .left.selected,
+#controls-h .right.selected,
+#controls-v .up.selected,
+#controls-v .down.selected {
     opacity: 1;
+    stroke: var(--theme-color-front);
 }
 
-#hall-of-fame {
+#pages,
+#pages > div {
     position: fixed;
     width: 100%;
     height: 100%;
+    padding: 0;
+    margin: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#pages > div.show {
+    visibility: visible;
+    pointer-events: all;
+}
+
+#hall-of-fame {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -79,6 +104,18 @@ canvas#canvas,
     font-size: 90%;
 }
 
+#game-over {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#game-over > div {
+    font-size: 300%;
+    color: var(--theme-color-front);
+    text-shadow: 0.04em 0.04em var(--theme-color-back);
+}
+
 p {
     text-align: center;
 }
@@ -89,11 +126,6 @@ p {
     }
 }
 
-body.play #hall-of-fame {
-    pointer-events: none;
-    display: none;
-}
-
 button {
     color: var(--theme-color-front);
     font: inherit;
@@ -102,7 +134,7 @@ button {
     padding: 1em;
     border-radius: 1em;
     border: 0.25em solid var(--theme-color-front-50);
-    background: none;
+    background: var(--theme-color-back);
     transition: 0.2s all;
     cursor: pointer;
 }

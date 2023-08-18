@@ -24,7 +24,35 @@
         <div id="game-screen">
             <canvas id="canvas"></canvas>
             <svg
-                id="controls"
+                id="controls-h"
+                xmlns="http://www.w3.org/2000/svg"
+                height="100%"
+                width="100%"
+                version="1.1"
+                viewBox="-60 -36 120 72"
+                preserveAspectRatio="xMidYMid"
+            >
+                <defs>
+                    <path id="triangle" d="M0,45l12,-25h-24z" />
+                </defs>
+                <g transform="scale(1, 0.6) rotate(45)">
+                    <circle cx="0" cy="0" r="50" stroke="none" />
+                    <g stroke-width="5" stroke-linejoin="round">
+                        <use
+                            class="left"
+                            href="#triangle"
+                            transform="rotate(90)"
+                        />
+                        <use
+                            class="right"
+                            href="#triangle"
+                            transform="rotate(-90)"
+                        />
+                    </g>
+                </g>
+            </svg>
+            <svg
+                id="controls-v"
                 xmlns="http://www.w3.org/2000/svg"
                 height="100%"
                 width="100%"
@@ -40,32 +68,32 @@
                     <g stroke-width="5" stroke-linejoin="round">
                         <use class="down" href="#triangle" />
                         <use
-                            class="left"
-                            href="#triangle"
-                            transform="rotate(90)"
-                        />
-                        <use
                             class="up"
                             href="#triangle"
                             transform="rotate(180)"
-                        />
-                        <use
-                            class="right"
-                            href="#triangle"
-                            transform="rotate(-90)"
                         />
                     </g>
                 </g>
             </svg>
         </div>
-        <div id="hall-of-fame">
-            <div>
-                <p>Best scorers:</p>
-                <div id="scores">...</div>
+        <div id="pages">
+            <div id="hall-of-fame">
+                <div>
+                    <p>Best scorers:</p>
+                    <div id="scores">...</div>
+                </div>
+                <div>
+                    <p>
+                        The quicker you catch diamonds, the more points you get.
+                    </p>
+                    <button id="start-button">Start</button>
+                </div>
             </div>
-            <div>
-                <p>The quicker you catch diamonds, the more points you get.</p>
-                <button id="start-button">Start</button>
+            <div id="game-over">
+                <div>
+                    <p>Game<br />Over</p>
+                </div>
+                <button>Restart</button>
             </div>
         </div>
         <div

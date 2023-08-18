@@ -1,3 +1,5 @@
+import { getElement } from "./dom"
+
 export function onKey(key: string, action: () => void) {
     window.addEventListener("keypress", (evt: KeyboardEvent) => {
         if (evt.key === key) {
@@ -6,4 +8,8 @@ export function onKey(key: string, action: () => void) {
             action()
         }
     })
+}
+
+export function onClick(selector: string, action: () => void) {
+    getElement(selector).addEventListener("click", action)
 }

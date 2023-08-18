@@ -3,7 +3,7 @@ import MoveLogic, { PivotHandler } from "./move"
 import Hunt from "./hunt/hunt"
 import { onKey } from "@/utils/events"
 
-interface PositionProvider {
+export interface PositionProvider {
     x: number
     y: number
 }
