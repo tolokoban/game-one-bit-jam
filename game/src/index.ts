@@ -10,8 +10,10 @@ import { displayScores } from "./utils/scores"
 import { showPage } from "./utils/page"
 
 async function start() {
+    const progress = getElement("#progress")
     showPage("hall-of-fame")
     displayScores()
+    progress.textContent = "Loading sprites...  (1/2)"
     const atlas = await TgdLoadImage.loadInCanvas("./atlas.png")
     if (!atlas) throw Error('Unable to load image "./atlas.png"!')
 
@@ -22,6 +24,7 @@ async function start() {
     })
     if (!gl) throw Error("Unable to get WebGL2 context!")
 
+    progress.textContent = "Loading particles...  (2/2)"
     const dataMaze = await loadAttributes("level1")
     const game = new Game(gl, atlas, dataMaze)
 
