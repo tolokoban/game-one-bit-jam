@@ -15,8 +15,8 @@ canvas#canvas,
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 50vmin;
-    height: 30vmin;
+    width: 55vmin;
+    height: 39vmin;
     margin: 0;
 }
 
@@ -24,8 +24,8 @@ canvas#canvas,
     position: absolute;
     right: 0;
     bottom: 0;
-    width: 50vmin;
-    height: 30vmin;
+    width: 55vmin;
+    height: 39vmin;
     margin: 0;
 }
 
@@ -36,19 +36,19 @@ canvas#canvas,
     }
 }
 
-#controls-h circle,
+/* #controls-h circle,
 #controls-v circle {
     fill: var(--theme-color-front-50);
     transition: 0.2s all;
-}
+} */
 
 #controls-h .left,
 #controls-h .right,
 #controls-v .up,
 #controls-v .down {
-    fill: var(--theme-color-back);
-    stroke: var(--theme-color-back);
-    opacity: 0.7;
+    /* fill: var(--theme-color-back);
+    stroke: var(--theme-color-back); */
+    opacity: 0.6;
     transition: 0.2s all;
 }
 
@@ -57,7 +57,7 @@ canvas#canvas,
 #controls-v .up.selected,
 #controls-v .down.selected {
     opacity: 1;
-    stroke: var(--theme-color-front);
+    /* stroke: var(--theme-color-front); */
 }
 
 #pages,
@@ -152,4 +152,28 @@ button:active {
     font-weight: bolder;
     color: var(--theme-color-front);
     text-shadow: 0.04em 0.04em var(--theme-color-back);
+}
+
+.fill-back {
+    fill: var(--theme-color-back);
+}
+
+.fill-front {
+    fill: var(--theme-color-front);
+}
+
+.stroke-back {
+    stroke: var(--theme-color-back);
+}
+
+.stroke-front {
+    stroke: var(--theme-color-front);
+}
+
+.fill-none {
+    fill: none;
+}
+
+.stroke-none {
+    stroke: none;
 }

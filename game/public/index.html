@@ -35,10 +35,20 @@
                 preserveAspectRatio="xMidYMid"
             >
                 <defs>
-                    <path id="triangle" d="M0,45l20,-40h-40z" />
+                    <g id="triangle">
+                        <circle
+                            cx="0"
+                            cy="26"
+                            r="23"
+                            class="fill-front stroke-none"
+                        />
+                        <path
+                            d="M0,46l10,-30h-20z"
+                            class="fill-back stroke-back"
+                        />
+                    </g>
                 </defs>
                 <g transform="scale(1, 0.6) rotate(45)">
-                    <circle cx="0" cy="0" r="50" stroke="none" />
                     <g stroke-width="5" stroke-linejoin="round">
                         <use
                             class="left"
@@ -62,11 +72,7 @@
                 viewBox="-50 -30 100 60"
                 preserveAspectRatio="xMidYMid"
             >
-                <defs>
-                    <path id="triangle" d="M0,45l15,-40h-30z" />
-                </defs>
                 <g transform="scale(1, 0.6) rotate(45)">
-                    <circle cx="0" cy="0" r="50" stroke="none" />
                     <g stroke-width="5" stroke-linejoin="round">
                         <use class="down" href="#triangle" />
                         <use
