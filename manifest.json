@@ -1,0 +1,16 @@
+{
+    "name": "Eat diamonds and switch the light",
+    "short_name": "OneBitJam",
+    "start_url": ".",
+    "description": "An arcade game based on speed",
+    "background_color": "#ccb27f",
+    "display": "standalone",
+    "orientation": "landscape",
+    "icons": [
+        {
+            "src": "icon-256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        }
+    ]
+}
