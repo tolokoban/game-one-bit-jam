@@ -4,7 +4,7 @@ const FS = require("fs")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
-// const { WebpackManifestPlugin } = require("webpack-manifest-plugin")
+const { GenerateSW } = require("workbox-webpack-plugin")
 const Webpack = require("webpack")
 
 module.exports = env => {
@@ -32,6 +32,7 @@ module.exports = env => {
             filename: "scr/[name].[contenthash].js",
             path: Path.resolve(__dirname, "build"),
             devtoolModuleFilenameTemplate: "[absolute-resource-path]",
+            clean: true,
         },
         entry: {
             app: "./src/index.ts",
@@ -69,14 +70,6 @@ module.exports = env => {
         },
         plugins: [
             new Webpack.ProgressPlugin(),
-            // // List of the needed files for later caching.
-            // new WebpackManifestPlugin({
-            //     filter: (file) => {
-            //         if (file.name.endsWith(".map")) return false
-            //         if (file.name.endsWith(".ts")) return false
-            //         return true
-            //     },
-            // }),
             new CleanWebpackPlugin({
                 // We don't want to remove the "index.html" file
                 // after the incremental build triggered by watch.
@@ -105,6 +98,16 @@ module.exports = env => {
                     minifyCSS: isProdMode,
                     removeComments: isProdMode,
                 },
+            }),
+            // https://developer.chrome.com/docs/workbox/modules/workbox-webpack-plugin/#generatesw-plugin
+            new GenerateSW({
+                exclude: [/\.map$/, /^manifest.*\.js$/, /\/dist\//],
+                swDest: "service-worker.js",
+                sourcemap: false,
+                cleanupOutdatedCaches: true,
+                maximumFileSizeToCacheInBytes: 2e7,
+                clientsClaim: true,
+                skipWaiting: true,
             }),
         ],
         performance: {
